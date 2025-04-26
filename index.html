@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>効果音ボタン</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#007BFF" />
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 1em;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1em;
+      max-width: 500px;
+      margin: auto;
+    }
+    button {
+      padding: 0.5em;
+      font-size: 1.2em;
+      border-radius: 8px;
+      border: none;
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h2>効果音ボタン</h2>
+  <div class="grid">
+    <button data-sound="./sounds/オールスター感謝祭.mp3">オールスター<br>感謝祭</button>
+    <button data-sound="./sounds/クイズ出題1.mp3">クイズ<br>出題1</button>
+    <button data-sound="./sounds/クイズ出題2.mp3">クイズ<br>出題2</button>
+    <button data-sound="./sounds/クイズ正解1.mp3">クイズ<br>正解1</button>
+    <button data-sound="./sounds/クイズ不正解1.mp3">クイズ<br>不正解1</button>
+    <button data-sound="./sounds/ジャン！.mp3">ジャン！</button>
+    <button data-sound="./sounds/チーン1.mp3">チーン1</button>
+    <button data-sound="./sounds/ドラムロール.mp3">ドラム<br>ロール</button>
+    <button data-sound="./sounds/ドンドンパフパフ.mp3">ドンドン<br>パフパフ</button>
+    <button data-sound="./sounds/ラッパのファンファーレ.mp3">ラッパの<br>ファンファーレ</button>
+    <button data-sound="./sounds/レベルアップ.mp3">レベルアップ</button>
+    <button data-sound="./sounds/歓声と拍手.mp3">歓声と拍手</button>
+    <button data-sound="./sounds/試合終了のゴング.mp3">試合終了の<br>ゴング</button>
+    <button data-sound="./sounds/大勢で拍手.mp3">大勢で拍手</button>
+    <button data-sound="./sounds/和太鼓でドドン.mp3">和太鼓で<br>ドドン</button>
+    <button data-sound="./sounds/和太鼓でドン.mp3">和太鼓で<br>ドン</button>
+  </div>
+
+  <script>
+    document.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sound = new Audio(btn.dataset.sound);
+        sound.currentTime = 0;
+        sound.play();
+      });
+    });
+
+    // Service Worker 登録
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
+    }
+  </script>
+</body>
+</html>
