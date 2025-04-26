@@ -3,8 +3,8 @@ const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
-  './icon-192.png',
-  './icon-512.png',
+//   './icon-192.png',
+//   './icon-512.png',
   './sounds/オールスター感謝祭.mp3',
   './sounds/クイズ出題1.mp3',
   './sounds/クイズ出題2.mp3',
@@ -21,7 +21,7 @@ const urlsToCache = [
   './sounds/大勢で拍手.mp3',
   './sounds/和太鼓でドドン.mp3',
   './sounds/和太鼓でドン.mp3'
-].map(path => `/quiz-sound/${path}`);
+];
 
 self.addEventListener('install', event => {
   event.waitUntil(
