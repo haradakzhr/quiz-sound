@@ -21,7 +21,7 @@ const urlsToCache = [
   './sounds/大勢で拍手.mp3',
   './sounds/和太鼓でドドン.mp3',
   './sounds/和太鼓でドン.mp3'
-];
+].map(path => `/haradakzh/quiz-sound/${path}`);
 
 self.addEventListener('install', event => {
   event.waitUntil(

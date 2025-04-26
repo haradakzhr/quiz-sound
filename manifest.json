@@ -1,7 +1,7 @@
 {
     "name": "効果音ボタンPWA",
     "short_name": "効果音PWA",
-    "start_url": "./",
+    "start_url": "/haradakzh/quiz-sound/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#007BFF",
