@@ -8,9 +8,11 @@
   <meta name="theme-color" content="#007BFF" />
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Comic Sans MS', sans-serif;
       text-align: center;
       padding: 1em;
+      background-color: #FFFAE3;
+      color: #333;
     }
     .grid {
       display: grid;
@@ -21,46 +23,171 @@
     }
     button {
       padding: 0.5em;
-      font-size: 1.2em;
-      border-radius: 8px;
+      font-size: 1em;
+      height: 70px;
+      border-radius: 12px;
       border: none;
-      background-color: #007BFF;
+      background-color: #3e57c5;
       color: white;
       cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, background-color 0.2s;
     }
     button:hover {
-      background-color: #0056b3;
+      background-color: #FF3B2F;
+      transform: scale(1.05);
+    }
+
+    /* モーダルのスタイル */
+    .modal {
+      display: none; /* 初期状態は非表示 */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #FFF5E1;
+      padding: 1em;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .modal button {
+      margin: 0.5em;
+      padding: 0.5em 1em;
+      font-size: 1em;
+      border-radius: 8px;
+      background-color: #FF6F61;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .modal button:hover {
+      background-color: #FF3B2F;
+    }
+
+    /* インジケーターのスタイル */
+    .progress-bar {
+      width: 100%;
+      background-color: #FFE4C4;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 1em;
+    }
+    .progress-bar-inner {
+      height: 10px;
+      width: 0%;
+      background-color: #FF6F61;
+      transition: width 0.1s linear;
     }
   </style>
 </head>
 <body>
-  <h2>効果音ボタン</h2>
+  <h2>オープニング</h2>
   <div class="grid">
-    <button data-sound="./sounds/オールスター感謝祭.mp3">オールスター<br>感謝祭</button>
+    <button data-sound="./sounds/ドンドンパフパフ.mp3">ドンドン<br>パフパフ</button>
+    <button data-sound="./sounds/ラッパのファンファーレ.mp3">ラッパの<br>ファンファーレ</button>
+    <button data-sound="./sounds/レベルアップ.mp3">レベルアップ<br></button>
+    <button data-sound="./sounds/歓声と拍手.mp3">歓声と拍手</button>
+    <button data-sound="./sounds/大勢で拍手.mp3">大勢で拍手</button>
+  </div>
+
+  <h2>クイズ</h2>
+
+  <div class="grid">
     <button data-sound="./sounds/クイズ出題1.mp3">クイズ<br>出題1</button>
     <button data-sound="./sounds/クイズ出題2.mp3">クイズ<br>出題2</button>
+    <button data-sound="./sounds/オールスター感謝祭.mp3">オールスター<br>感謝祭</button>
     <button data-sound="./sounds/クイズ正解1.mp3">クイズ<br>正解1</button>
     <button data-sound="./sounds/クイズ不正解1.mp3">クイズ<br>不正解1</button>
     <button data-sound="./sounds/ジャン！.mp3">ジャン！</button>
     <button data-sound="./sounds/チーン1.mp3">チーン1</button>
     <button data-sound="./sounds/ドラムロール.mp3">ドラム<br>ロール</button>
     <button data-sound="./sounds/ドンドンパフパフ.mp3">ドンドン<br>パフパフ</button>
-    <button data-sound="./sounds/ラッパのファンファーレ.mp3">ラッパの<br>ファンファーレ</button>
     <button data-sound="./sounds/レベルアップ.mp3">レベルアップ</button>
-    <button data-sound="./sounds/歓声と拍手.mp3">歓声と拍手</button>
     <button data-sound="./sounds/試合終了のゴング.mp3">試合終了の<br>ゴング</button>
-    <button data-sound="./sounds/大勢で拍手.mp3">大勢で拍手</button>
     <button data-sound="./sounds/和太鼓でドドン.mp3">和太鼓で<br>ドドン</button>
     <button data-sound="./sounds/和太鼓でドン.mp3">和太鼓で<br>ドン</button>
   </div>
 
+
+
+  <!-- モーダル -->
+  <div class="modal" id="soundModal">
+    <div class="modal-content">
+      <p id="modalText">再生中...</p>
+      <div class="progress-bar">
+        <div class="progress-bar-inner" id="progressBar"></div>
+      </div>
+      <button id="pauseButton">一時停止</button>
+      <button id="closeButton">閉じる</button>
+    </div>
+  </div>
+
   <script>
-    document.querySelectorAll('button').forEach(btn => {
+    const modal = document.getElementById('soundModal');
+    const modalText = document.getElementById('modalText');
+    const pauseButton = document.getElementById('pauseButton');
+    const closeButton = document.getElementById('closeButton');
+    const progressBar = document.getElementById('progressBar');
+    let currentAudio = null;
+    let progressInterval = null;
+
+    document.querySelectorAll('button[data-sound]').forEach(btn => {
       btn.addEventListener('click', () => {
+        if (currentAudio) {
+          currentAudio.pause();
+          clearInterval(progressInterval);
+        }
+
         const sound = new Audio(btn.dataset.sound);
+        currentAudio = sound;
         sound.currentTime = 0;
         sound.play();
+
+        modal.style.display = 'flex';
+        modalText.textContent = `再生中: ${btn.textContent}`;
+
+        progressInterval = setInterval(() => {
+          const progress = (sound.currentTime / sound.duration) * 100;
+          progressBar.style.width = `${progress}%`;
+        }, 100);
+
+        sound.addEventListener('ended', () => {
+          modal.style.display = 'none';
+          progressBar.style.width = '0%';
+          clearInterval(progressInterval);
+          currentAudio = null;
+        });
       });
+    });
+
+    pauseButton.addEventListener('click', () => {
+      if (currentAudio) {
+        if (currentAudio.paused) {
+          currentAudio.play();
+          pauseButton.textContent = '一時停止';
+        } else {
+          currentAudio.pause();
+          pauseButton.textContent = '再生';
+        }
+      }
+    });
+
+    closeButton.addEventListener('click', () => {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+        clearInterval(progressInterval);
+      }
+      modal.style.display = 'none';
+      progressBar.style.width = '0%';
     });
 
     // Service Worker 登録
